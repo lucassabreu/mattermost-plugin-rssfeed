@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"github.com/mattermost/mattermost-server/v5/model"
 	"io/ioutil"
 	"path/filepath"
+	"strings"
 )
 
 const minimumServerVersion = "5.10.0"
@@ -80,6 +82,9 @@ func (p *RSSFeedPlugin) setBotProfileImage(botUserID string) *model.AppError {
 		p.API.LogError("Failed getting bundle path for " + botDisplayName + ". " + err.Error())
 
 		return &model.AppError{Message: err.Error()}
+	}
+	if strings.Contains(bundlePath, "../") || strings.Contains(bundlePath, "..\\") {
+		return &model.AppError{Message: fmt.Errorf("Invalid file path").Error()}
 	}
 
 	//profileImage, err := p.readFile(filepath.Join(bundlePath, "assets", "rss.png"))
